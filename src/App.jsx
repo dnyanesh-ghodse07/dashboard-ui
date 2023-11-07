@@ -1,6 +1,6 @@
 import "./App.css";
 import { Navbar } from "./components/navbar";
-import { Sidebar } from "./components/sidebar";
+import { SideBar } from "./components/sidebar";
 import Router from "./router";
 
 const drawerWidth = 200;
@@ -8,8 +8,8 @@ const drawerWidth = 200;
 function App() {
   return (
     <>
-      <Sidebar drawerWidth={drawerWidth} />
       <Navbar drawerWidth={drawerWidth} />
+      <SideBar drawerWidth={drawerWidth} />
 
       <Router />
     </>

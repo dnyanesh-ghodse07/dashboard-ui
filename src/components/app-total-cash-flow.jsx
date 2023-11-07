@@ -84,7 +84,6 @@ export const AppTotalCashFlow = () => {
       .attr("class", "month-label")
       .attr("x", (d) => x(d.month) + x.bandwidth() / 3)
       .attr("y", height + margin.bottom)
-      // .attr("dy", "1.5em")
       .style("text-anchor", "middle")
       .text((d) => d.month);
   }, [data]);

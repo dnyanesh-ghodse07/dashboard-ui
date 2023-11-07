@@ -12,59 +12,8 @@ import {
   Typography,
 } from "@mui/material";
 import { MainCard } from "./mainCard";
-const data = [
-  { x: 0, y: 1 },
-  { x: 3, y: 2 },
-  { x: 1, y: 3 },
-  { x: 3, y: 4 },
-  { x: 5, y: 5 },
-];
 
-const width = 500;
-const height = 200;
 export const AppAccountCheck = () => {
-  const chartRef = useRef(null);
-
-  useEffect(() => {
-    const svg = d3.select(chartRef.current);
-    const margin = { top: 20, right: 40, bottom: 30, left: 40 };
-
-    // svg.selectAll("*").remove();
-
-    const x = d3
-      .scaleRadial()
-      .domain([0, d3.max(data, (d) => d.x)])
-      .range([margin.left, width - margin.right]);
-
-    const y = d3
-      .scaleRadial()
-      .domain([0, d3.max(data, (d) => d.y)])
-      .nice()
-      .range([height - margin.bottom, margin.top]);
-
-    const line = d3
-      .line()
-      .curve(d3.curveBundle.beta(0.5))
-      .x((d) => x(d.x))
-      .y((d) => y(d.y));
-
-    svg
-      .append("g")
-      .attr("transform", `translate(0, ${height - margin.bottom})`)
-      .call(d3.axisBottom(x))
-      .style("font-size", "14px")
-      .call((g) => g.select(".domain").remove())
-      .call((g) => g.selectAll("line").remove());
-
-    svg
-      .append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "lightgreen")
-      .attr("stroke-width", 4)
-      .attr("d", line);
-  }, []);
-
   const [manage, setManage] = useState("");
   const [month, setMonth] = useState("");
 
@@ -75,6 +24,64 @@ export const AppAccountCheck = () => {
   const handleMonthChange = (event) => {
     setMonth(event.target.value);
   };
+
+  const svgRef = useRef(null);
+
+  const generateRandomData = (length) => {
+    return Array.from({ length }, () => Math.floor(Math.random() * 10));
+  };
+
+  const data = generateRandomData(10);
+
+  useEffect(() => {
+    const svg = d3.select(svgRef.current);
+
+    // Clear previous chart
+    svg.selectAll("*").remove();
+
+    // Add some padding
+    const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+    const width = 500 - margin.left - margin.right;
+    const height = 200 - margin.top - margin.bottom;
+
+    const chart = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const xScale = d3
+      .scaleLinear()
+      .domain([0, data.length - 1])
+      .range([0, width]);
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, d3.max(data)])
+      .range([height, 0]);
+
+    const line = d3
+      .line()
+      .x((d, i) => xScale(i))
+      .y((d) => yScale(d))
+      .curve(d3.curveCardinal.tension(0.1));
+
+    chart
+      .append("path")
+      .datum(data)
+      .attr("fill", "none")
+      .attr("stroke", "lightgreen")
+      .attr("stroke-width", 3)
+      .attr("d", line);
+
+    chart
+      .selectAll(".x-label")
+      .data(data)
+      .enter()
+      .append("text")
+      .attr("class", "month-label")
+      .attr("x", (d) => xScale(d))
+      .attr("y", height + margin.bottom)
+      .style("text-anchor", "middle")
+      .text((d) => d);
+  }, []);
 
   return (
     <>
@@ -123,7 +130,7 @@ export const AppAccountCheck = () => {
           }
         />
         <Divider sx={{ borderStyle: "solid" }} />
-        <svg ref={chartRef} width={500} height={200}></svg>
+        <svg ref={svgRef} width={500} height={200}></svg>
       </MainCard>
     </>
   );

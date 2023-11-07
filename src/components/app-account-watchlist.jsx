@@ -36,13 +36,14 @@ export const AppAccountWatchList = () => {
         }
       />
       <Divider />
-      <TableContainer sx={{ border: "none", maxHeight: 250, minWidth: 300 }}>
+      <TableContainer sx={{ border: "none", maxHeight: 220 }}>
         <Table
           stickyHeader
           sx={{
-            minWidth: 300,
+            minWidth: 250,
             border: "none",
             boxShadow: "none",
+            paddingBottom: "10px",
           }}
           aria-label="simple table"
         >
