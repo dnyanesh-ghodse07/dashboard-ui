@@ -12,26 +12,24 @@ import {
   Typography,
 } from "@mui/material";
 import { MainCard } from "./mainCard";
+import { useData } from "../store/dataContext";
 
 export const AppAccountCheck = () => {
   const [manage, setManage] = useState("");
   const [month, setMonth] = useState("");
+  const { accountCheckData: data, randomize } = useData();
 
   const handleManageChange = (event) => {
+    randomize();
     setManage(event.target.value);
   };
 
   const handleMonthChange = (event) => {
+    randomize();
     setMonth(event.target.value);
   };
 
   const svgRef = useRef(null);
-
-  const generateRandomData = (length) => {
-    return Array.from({ length }, () => Math.floor(Math.random() * 10));
-  };
-
-  const data = generateRandomData(10);
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
@@ -39,7 +37,7 @@ export const AppAccountCheck = () => {
     // Clear previous chart
     svg.selectAll("*").remove();
 
-    // Add some padding
+    // chart padding
     const margin = { top: 20, right: 20, bottom: 40, left: 40 };
     const width = 500 - margin.left - margin.right;
     const height = 200 - margin.top - margin.bottom;
@@ -81,7 +79,7 @@ export const AppAccountCheck = () => {
       .attr("y", height + margin.bottom)
       .style("text-anchor", "middle")
       .text((d) => d);
-  }, []);
+  }, [data]);
 
   return (
     <>

@@ -10,7 +10,6 @@ function App() {
     <>
       <Navbar drawerWidth={drawerWidth} />
       <SideBar drawerWidth={drawerWidth} />
-
       <Router />
     </>
   );

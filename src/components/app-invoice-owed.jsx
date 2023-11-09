@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { Button, CardHeader, Divider, Grid, Typography } from "@mui/material";
 import { MainCard } from "./mainCard";
 import { UploadModal } from "./uploadModal";
+import { useData } from "../store/dataContext";
 
 // const data = [
 //   { value: 10 },
@@ -12,40 +13,41 @@ import { UploadModal } from "./uploadModal";
 //   { value: 30 },
 // ];
 
-const width = 500;
-const height = 200;
 export const AppInvoiceOwed = () => {
-  // const chartRef = useRef(null);
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
   const handleOpen = () => setOpen(true);
 
   const chartRef = useRef(null);
 
+  const { accountCheckData: data } = useData();
+
   useEffect(() => {
-    const data = [10, 20, 30, 40, 50];
     const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+    const width = 500 - margin.left - margin.right;
+    const height = 200 - margin.top - margin.bottom;
     const barWidth = 15;
 
-    const svg = d3
-      .select(chartRef.current)
-      .append("svg")
-      .attr("class", "bar-chart-svg")
-      .attr("preserveAspectRatio", "xMinYMin meet")
-      .attr("viewBox", `0 0 ${chartRef.current.clientWidth} 250`);
+    const svg = d3.select(chartRef.current);
+    svg.selectAll("*").remove();
+
+    const chart = svg
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
     const xScale = d3
       .scaleBand()
       .domain(data.map((_, i) => i))
-      .range([margin.left, chartRef.current.clientWidth - margin.right])
+      .range([margin.left, width - margin.right])
       .padding(0.1);
 
     const yScale = d3
       .scaleLinear()
       .domain([0, d3.max(data)])
-      .range([200, margin.top]);
+      .range([height, 0]);
 
-    svg
+    //bars
+    chart
       .selectAll("rect")
       .data(data)
       .enter()
@@ -55,21 +57,19 @@ export const AppInvoiceOwed = () => {
       .attr("x", (_, i) => xScale(i))
       .attr("y", (d) => yScale(d))
       .attr("width", barWidth)
-      .attr("height", (d) => 200 - yScale(d))
+      .attr("height", (d) => height - yScale(d))
       .style("fill", "lightgreen");
 
-    svg
-      .selectAll("text.y-axis-label")
+    chart
+      .selectAll(".y-label")
       .data(data)
       .enter()
       .append("text")
-      .text((d) => d)
       .attr("x", (_, i) => xScale(i) + barWidth / 2)
-      .attr("y", 220)
+      .attr("y", height + margin.bottom)
       .style("text-anchor", "middle")
-      .style("fill", "black")
-      .attr("class", "y-axis-label");
-  }, []);
+      .text((d) => d);
+  }, [data]);
 
   return (
     <>
@@ -92,7 +92,7 @@ export const AppInvoiceOwed = () => {
           }
         />
         <Divider sx={{ borderStyle: "solid" }} />
-        <svg ref={chartRef} width={width} height={height}></svg>
+        <svg ref={chartRef} width={500} height={200}></svg>
       </MainCard>
     </>
   );
